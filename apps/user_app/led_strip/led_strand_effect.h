@@ -129,7 +129,7 @@ base_ins_t base_ins;   //电机
 
 #pragma pack ()
 
-extern fc_effect_t fc_effect;
+extern volatile fc_effect_t fc_effect;
 
 void effect_smear_adjust_updata(smear_tool_e tool, hsv_t *colour,unsigned short *led_place);
 

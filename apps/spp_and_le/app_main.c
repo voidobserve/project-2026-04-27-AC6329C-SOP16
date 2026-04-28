@@ -283,15 +283,15 @@ static const u16 timer_div[] = {
     /*1111*/    128 * 256,
 };
 
-#define APP_TIMER_CLK           (CONFIG_BT_NORMAL_HZ/2) //clk_get("timer")
-#define MAX_TIME_CNT            0x7fff
-#define MIN_TIME_CNT            0x100
-#define TIMER_UNIT				1
+#define APP_TIMER_CLK (24000000) // clk_get("timer")
+#define MAX_TIME_CNT 0x7fff
+#define MIN_TIME_CNT 0x100
+#define TIMER_UNIT 1
 
-#define TIMER_CON               JL_TIMER2->CON
-#define TIMER_CNT               JL_TIMER2->CNT
-#define TIMER_PRD               JL_TIMER2->PRD
-#define TIMER_VETOR             IRQ_TIME2_IDX
+#define TIMER_CON JL_TIMER2->CON
+#define TIMER_CNT JL_TIMER2->CNT
+#define TIMER_PRD JL_TIMER2->PRD
+#define TIMER_VETOR IRQ_TIME2_IDX
 
 /****************************************************************************************
 **名称:定时中断服务函数
@@ -303,9 +303,9 @@ static const u16 timer_div[] = {
 #define USER_IR_ENABLE 0
 ___interrupt
 AT_VOLATILE_RAM_CODE
-void user_timer_isr(void)//50us
+void user_timer_isr(void) 
 {
-	static u8 timer_cnt;
+	// static u8 timer_cnt;
 	TIMER_CON |= BIT(14);
 
 
@@ -323,22 +323,23 @@ void user_timer_isr(void)//50us
 
 void user_timer_init(void)
 {
-	u32 prd_cnt;
-	u8 index;
+    u32 prd_cnt;
+    u8 index;
 
-//	printf("********* user_timer_init **********\n");
-	for (index = 0; index < (sizeof(timer_div) / sizeof(timer_div[0])); index++)
-	{
+    //	printf("********* user_timer_init **********\n");
+    for (index = 0; index < (sizeof(timer_div) / sizeof(timer_div[0])); index++)
+    {
         prd_cnt = TIMER_UNIT * (APP_TIMER_CLK / 8000) / timer_div[index];
-        if (prd_cnt > MIN_TIME_CNT && prd_cnt < MAX_TIME_CNT) {
+        if (prd_cnt > MIN_TIME_CNT && prd_cnt < MAX_TIME_CNT)
+        {
             break;
         }
     }
 
-	TIMER_CNT = 0;
-	TIMER_PRD = prd_cnt;
-	request_irq(TIMER_VETOR, 0, user_timer_isr, 0);
-	TIMER_CON = (index << 4) | BIT(0) | BIT(3);
+    TIMER_CNT = 0;
+    TIMER_PRD = prd_cnt;
+    request_irq(TIMER_VETOR, 3, user_timer_isr, 0);
+    TIMER_CON = (0b0001 << 10) | (index << 4) | (0x01 << 0); // 选择晶振作为时钟源，分频系数，定时器计数模式
 }
 __initcall(user_timer_init);
 
@@ -502,8 +503,6 @@ void main_while(viod)
   
 
 }
-
-OS_SEM LED_TASK_SEM;
 
 void my_main(void)
 {

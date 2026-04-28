@@ -16,12 +16,13 @@ typedef struct
     u16 period;          //000:  8S; 001:  13S; 010:  18S ;011:  21S ;100:  26S  //转速  
     u8 dir;            //1:反转 0:正转  仅音乐律动模式有效
     u8 music_mode;     //音乐律动下的转动模式
-    u8 motor_on_off;   //0:关闭电机  1：开启电机
+    // u8 motor_on_off;   //0:关闭电机  1：开启电机
 }base_ins_t;
 
 
 extern u16 period[6];
 
+void one_wire_set_mode(u8 m);
 
 
 #endif
